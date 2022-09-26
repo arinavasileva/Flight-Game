@@ -1,2 +1,1 @@
-akfaksf
-djdjd
+print("a")
