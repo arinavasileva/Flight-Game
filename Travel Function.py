@@ -67,6 +67,7 @@ def travel():
         print(f"co2 left: {co2_left}")
 
 
+
     # if player has enough co2 to travel between locations:
     if co2_left >= trip_distance:
         # update current location
