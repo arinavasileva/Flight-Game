@@ -71,12 +71,12 @@ def travel():
     # if player has enough co2 to travel between locations:
     if co2_left >= trip_distance:
         # update current location
-        sql = "UPDATE game SET location=local WHERE screen_name='Heini'"
+        sql = "UPDATE game SET location='" + iaco + "' WHERE screen_name='Heini'"
         cursor = connection.cursor()
         cursor.execute(sql)
 
         # update co2 budget
-        new_co2 = co2_left - trip_distance
+        new_co2 = str(co2_left + trip_distance)
         sql = "UPDATE game SET co2_consumed="+new_co2+" WHERE screen_name='Heini'"
         cursor = connection.cursor()
         cursor.execute(sql)
