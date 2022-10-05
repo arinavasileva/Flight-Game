@@ -3,10 +3,10 @@ import random
 
 def random_weather():
     temperature = random.randint(-40, 40)
-    clear = random.choice(['Cloudy', 'Clear'])
+    conditions = random.choice(['Cloudy', 'Clear'])
     wind = random.randint(0, 15)
 
-    randomized_weather = (temperature, clear, wind)
+    randomized_weather = (temperature, conditions, wind)
 
     return randomized_weather
 
