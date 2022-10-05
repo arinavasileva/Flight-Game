@@ -1,5 +1,0 @@
-print("hell")
-
-
-
-print("slihfbripyfdöfojndofu")
