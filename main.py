@@ -24,7 +24,6 @@ def determine_current_location(screen_name):
     return current_location
 
 
-
 # Desired location latitude and longitude:
 def desired_lat_and_long(icao):
     sql = "SELECT latitude_deg, longitude_deg FROM airport WHERE ident= '" + icao + "';"
