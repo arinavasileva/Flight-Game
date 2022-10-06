@@ -12,110 +12,135 @@ connection = mariadb.connect(
          autocommit=True
          )
 
-
-def determine_current_location(screen_name):
+def current_icao(screen_name):
     sql = "SELECT ident FROM airport, game WHERE game.location=airport.ident AND game.screen_name='" + screen_name + "'"
     cursor = connection.cursor()
     cursor.execute(sql)
-    location = cursor.fetchall()
+    response = cursor.fetchall()
+    return response
 
-    # create variable to store current location:
-    current_location = ''
-    for row in location:
-        current_location = row[0]
-    return current_location
-
-
-# Desired location latitude and longitude:
-def desired_lat_and_long(icao):
-    sql = "SELECT latitude_deg, longitude_deg FROM airport WHERE ident= '" + icao + "';"
+def latitude_and_longitude(icao):
+    sql = "SELECT latitude_deg, longitude_deg FROM airport WHERE ident= '" + current_icao + "';"
     cursor = connection.cursor()
     cursor.execute(sql)
     response = cursor.fetchall()
     return response
 
+def calculate_distance_km(starting_location, final_location):
+    location1 = latitude_and_longitude(starting_location)
+    location2 = latitude_and_longitude(final_location)
+    distance = GD(location1, location2).km
+    return distance
 
-# Current location lat and long:
-def current_lat_and_long(starting_location):
-    sql = "SELECT latitude_deg, longitude_deg FROM airport WHERE ident= '" + starting_location + "';"
+def available_co2(screen_name):
+    sql = "select @co2_left:= co2_budget - co2_consumed as co2_left from game where screen_name= '" + screen_name + "';"
     cursor = connection.cursor()
     cursor.execute(sql)
-    response = cursor.fetchall()
-    return response
+    co2_avail = cursor.fetchall()
+    return co2_avail
 
 
-# Distance between current and travel location
-def calculate_distance(starting_location, final_location):
-    trip_distance = GD(starting_location, final_location).km
-    return trip_distance
-
-
-# calculate co2 available
-def calculate_available_co2(screen_name):
-    sql = "select @co2_left:= co2_budget - co2_consumed as co2_left from game where screen_name = 'Heini';"
-    cursor = connection.cursor()
-    cursor.execute(sql)
-    response3 = cursor.fetchall()
-    co2_left = response3
-    # store new available co2 as a variable:
-    for row in co2_left:
-        co2_left = row[0]
-    return co2_left
-
-
-def update_current_location(screen_name, icao):
-    sql = "UPDATE game SET location='" + icao + "' WHERE screen_name='" + screen_name + "'"
+def travel(screen_name, icao):
+    sql = "UPDATE game SET location='" + icao + "' WHERE screen_name='" + screen_name + "';"
     cursor = connection.cursor()
     cursor.execute(sql)
     return
 
 
-def update_co2_budget(co2_left, trip_distance):
+def update_co2_budget(co2_left, trip_distance, screen_name):
     new_co2 = str(co2_left + trip_distance)
-    sql = "UPDATE game SET co2_consumed=" + new_co2 + " WHERE screen_name='Heini'"
+    sql = "UPDATE game SET co2_consumed=" + new_co2 + " WHERE screen_name='" + screen_name + "';"
     cursor = connection.cursor()
     cursor.execute(sql)
-
+    return
 
 def random_weather():
     temperature = random.randint(-40, 40)
     conditions = random.choice(['Cloudy', 'Clear'])
     wind = random.randint(0, 15)
-    randomized_weather = (temperature, conditions, wind)
-    return randomized_weather
+    weather = (temperature, conditions, wind)
+    return weather
 
-# compare weather conditions between current location and goals
-def compare_weather_conditions(temperature, conditions, wind):
-    goals_to_update = ()
-    #sql code: select target minimum from goal 1
-    #if temp is greater:
-        goals_to_update.append(1)
-    # sql code: select target maximum from goal 2
-    #if temp is less-than:
-        goals_to_update.append(2)
-    # sql code: select target minimum and maximum from goal 3
-    #if temp is between min and max:
-        goals_to_update.append(3)
-    # sql code: select target minimum and maximum from goal 4
-    # if temp is between min and max:
-        goals_to_update.append(4)
-    # sql code: select target minimum and maximum from goal 5
-    # if temp is between min and max:
-        goals_to_update.append(5)
-    # sql code: select target_text from goal 6
-    #if conditions == 'clear'
-        goals_to_update.append(6)
-    # sql code: select target_text from goal 7
-    # if conditions == 'clouds'
-        goals_to_update.append(7)
-    #sql code: select target min from goal 8
-    # if wind greater than target min:
-        goals_to_update.append(8)
-    return goals_to_update()
+def goals_achieved(temperature, conditions, wind):
+    achieved_goals = ()
+    sql_statement = ['target_minvalue', 'target_maxvalue', ('target_minimum', 'target_maxvalue'), ('target_minimum', 'target_maxvalue'), ('target_minimum', 'target_maxvalue'), 'target_text', 'target_text', 'target_minvalue']
+    for i in range(8):
+        sql = "SELECT '"+sql_statement[i]+"' FROM goal WHERE id = '1';"
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    response = cursor.fetchall()
+    if temperature > response:
+        achieved_goals.append(1)
 
+    sql = "SELECT target_maxvalue FROM goal WHERE id = '2';"
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    response = cursor.fetchall()
+    if temperature < response:
+        achieved_goals.append(2)
+
+    sql = "SELECT target_minimum, target_maxvalue FROM goal WHERE id = '3';"
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    response = cursor.fetchall()
+    target_minimum = []
+    target_maxvalue = []
+    for row in response:
+        target_minimum = row[0]
+        target_maxvalue = row[1]
+    if target_minimum <= temperature >= target_maxvalue:
+        achieved_goals.add(3)
+
+    sql = "SELECT target_minimum, target_maxvalue FROM goal WHERE id = '4';"
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    response = cursor.fetchall()
+    target_minimum = []
+    target_maxvalue = []
+    for row in response:
+        target_minimum = row[0]
+        target_maxvalue = row[1]
+    if target_minimum <= temperature >= target_maxvalue:
+        achieved_goals.append(4)
+
+    sql = "SELECT target_minimum, target_maxvalue FROM goal WHERE id = '5';"
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    response = cursor.fetchall()
+    target_minimum = []
+    target_maxvalue = []
+    for row in response:
+        target_minimum = row[0]
+        target_maxvalue = row[1]
+    if target_minimum <= temperature >= target_maxvalue:
+        achieved_goals.append(5)
+
+    sql = "SELECT target_text FROM goal WHERE id = '6';"
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    response = cursor.fetchall()
+    if response == conditions:
+        achieved_goals.append(6)
+
+    sql = "SELECT target_text FROM goal WHERE id = '7';"
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    response = cursor.fetchall()
+    if response == conditions:
+        achieved_goals.append(7)
+
+    sql = "SELECT target_minvalue FROM goal WHERE id = '8';"
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    response = cursor.fetchall()
+    if response >= wind:
+        achieved_goals.append(8)
+
+    return achieved_goals
 
 # if weather conditions meet any goals update goals_reached table
-def update_goals_reached():
+def update_goals_reached(goals_to_update, screen_name):
+    sql = "UPDATE goal_reached WHERE"
 
 
 # main:
