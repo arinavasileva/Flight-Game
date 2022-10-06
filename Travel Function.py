@@ -15,31 +15,33 @@ connection = mariadb.connect(
 def travel():
     # ask for IACO code of where the player wants to go
     iaco = input("enter IACO code")
+
     # determine current location
     sql = "SELECT ident FROM airport, game WHERE game.location=airport.ident AND game.screen_name='Heini'"
     cursor = connection.cursor()
     cursor.execute(sql)
     location = cursor.fetchall()
-    # get variable to store current location:
-    str_location = ''
+
+    # create variable to store current location:
+    starting_location = ''
     for row in location:
-        str_location = row[0]
+        starting_location = row[0]
         print(f"{row[0]}")
 
     # determine distance between the two locations:
     # Desired location lat and long:
 # def desired_lat_and_long(icao)
-    sql = "SELECT latitude_deg, longitude_deg FROM airport WHERE ident= '" + iaco + "';"
+    #sql = "SELECT latitude_deg, longitude_deg FROM airport WHERE ident= '" + iaco + "';"
     cursor = connection.cursor()
     cursor.execute(sql)
-    response1 = cursor.fetchall()
-    for row in response1:
+    final_location = cursor.fetchall()
+    for row in final_location:
         print(f"{row[0]}")
         print(f"{row[1]}")
 
     # Current location lat and long:
 #def current_lat_and_long( icao code)
-    sql = "SELECT latitude_deg, longitude_deg FROM airport WHERE ident= '" + str_location + "';"
+    #sql = "SELECT latitude_deg, longitude_deg FROM airport WHERE ident= '" + starting_location + "';"
     cursor = connection.cursor()
     cursor.execute(sql)
     response2 = cursor.fetchall()
@@ -52,7 +54,7 @@ def travel():
 
 
 # Distance between current and travel location
-    trip_distance = GD(response1, response2).km
+    trip_distance = GD(final_location, response2).km
     print(f"the distance is {trip_distance}km")
 
     # calculate co2 available
