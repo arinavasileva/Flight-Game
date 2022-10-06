@@ -8,7 +8,7 @@ connection = mysql.connector.connect(
     password='root123',
     autocommit=True
 )
-def get_location(id):
+def get_municipality(id):
     location = "SELECT name, municipality FROM airport WHERE ident ='"+id+"'"
     cursor = connection.cursor()
     cursor.execute(location)
@@ -18,7 +18,7 @@ def get_location(id):
     return
 
 airport_id = input("ENTER ident")
-get_location(airport_id)
+get_municipality()
 
 
 # The input is Ident(primary key of the airport table)
