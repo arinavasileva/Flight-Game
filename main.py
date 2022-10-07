@@ -146,3 +146,32 @@ def update_goals_reached(goals_to_update, screen_name):
 # main:
 # When a player starts the game, they are greeted and asked to enter their name.
 # Their name is saved to the game table of our flight_game database and they are given a c02 budget of 10000.
+# def create_player()
+# def create budget()
+
+# 'Hello [user]! Welcome to Flight Game! Please select one of the following options:'
+# Next the player is presented with a list of options:
+# - view current location
+# - view goals (need function)
+# - view co2 budget
+# - travel to new airport
+
+
+# -> If the player selects 'view current location': - The player's current location is displayed on the screen
+
+# -> If the player selects 'view goals': - A list of remaining goals appear
+
+# -> If the player selects 'view co2 budget': - The remaining co2 in the player's budget is displayed
+
+# -> If the player selects 'travel to a new airport'
+# if the player has enough c02>0 : - The player is asked to enter an ICAO code for the airport the wish to tavel to:
+# After the player enters the code, the program checks that the player has enough co2 budgeted for the trip and informs them how far away the airport is and how much co2 will be consumed. If they have enough co2, they are then asked if they want to proceed. If not, they return to the first options list.
+
+   # - If the player selects yes:
+   #   - the players location is updated
+   #   - the players co2 budgeted is updated
+   #   - goals acheived are updated if any weather conditions correnspond with unrealized goals
+   #   - All updated information is displayed to the player.
+   #   - The player then goes back to the first option list
+   #   - Check if the goals that are acheived are >=5 ; if so
+   #   - player WINS!
