@@ -144,6 +144,7 @@ def goals_achieved(temperature, conditions, wind):
 def update_goals_reached(achieved_goals, screen_name):
     sql = "UPDATE goal_reached WHERE"
 
+
 # main:
 # When a player starts the game, they are greeted and asked to enter their name.
 # Their name is saved to the game table of our flight_game database and they are given a c02 budget of 10000.
