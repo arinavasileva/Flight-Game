@@ -25,15 +25,13 @@ The purpose of the game:
     - view current location
     - view goals
     - view co2 budget
-    - view all players and their information
-    - search weather conditions
     - travel to new airport
     
 -> If the player selects 'view current location':
     - The player's current location is displayed on the screen
     
 -> If the player selects 'view goals':
-    - A list of completed goals and remaining goals appear
+    - A list of remaining goals appear
  
 -> If the player selects 'view co2 budget':
     - The remaining co2 in the player's budget is displayed
