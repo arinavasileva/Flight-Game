@@ -143,6 +143,53 @@ def update_goals_reached(goals_to_update, screen_name):
     sql = "UPDATE goal_reached WHERE"
 
 
+
+# Amir
+
+
+import mysql.connector
+
+connection = mysql.connector.connect(
+    host='127.0.0.1',
+    port=3306,
+    database='flight_game',
+    user='root',
+    password='root123',
+    autocommit=True
+)
+def get_municipality(id):
+    location = "SELECT name, municipality FROM airport WHERE ident ='"+id+"'"
+    cursor = connection.cursor()
+    cursor.execute(location)
+    result = cursor.fetchall()
+    for row in result:
+        print(f"The Airport is in  {row[0]} in {row[1]}.")
+    return
+
+airport_id = input("ENTER ident")
+get_municipality(airport_id)
+
+
+
+
+player_name = input("Enter Your Name")
+
+def greetings(name):
+    max_id = "SELECT MAX(id) from game;"
+    cursor = connection.cursor()
+    cursor.execute(max_id)
+    # connection.commit()
+    max_num = int(cursor.fetchall()[0][0])
+    sql = "INSERT INTO game (id, screen_name, co2_consumed, co2_budget, location) VALUES(" + str(max_num + 1) +",'"+name+"', 0, 10000,'EFHK');"
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    cursor.fetchall()
+    connection.commit()
+    return
+greetings(player_name)
+
+
+
 # main:
 # When a player starts the game, they are greeted and asked to enter their name.
 # Their name is saved to the game table of our flight_game database and they are given a c02 budget of 10000.
