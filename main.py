@@ -62,24 +62,22 @@ def random_weather():
     return weather
 
 def goals_achieved(temperature, conditions, wind):
-    achieved_goals = ()
-    sql_statement = ['target_minvalue', 'target_maxvalue', ('target_minimum', 'target_maxvalue'), ('target_minimum', 'target_maxvalue'), ('target_minimum', 'target_maxvalue'), 'target_text', 'target_text', 'target_minvalue']
-    for i in range(8):
-        sql = "SELECT '"+sql_statement[i]+"' FROM goal WHERE id = '1';"
+    achieved_goals = []
+    sql = "SELECT target_minvalue FROM goal WHERE id = '1';"
     cursor = connection.cursor()
     cursor.execute(sql)
     response = cursor.fetchall()
-    if temperature > response:
+    if temperature >= response[0][0]:
         achieved_goals.append(1)
 
     sql = "SELECT target_maxvalue FROM goal WHERE id = '2';"
     cursor = connection.cursor()
     cursor.execute(sql)
     response = cursor.fetchall()
-    if temperature < response:
+    if temperature <= response[0][0]:
         achieved_goals.append(2)
 
-    sql = "SELECT target_minimum, target_maxvalue FROM goal WHERE id = '3';"
+    sql = "SELECT target_minvalue, target_maxvalue FROM goal WHERE id = '3';"
     cursor = connection.cursor()
     cursor.execute(sql)
     response = cursor.fetchall()
@@ -88,10 +86,10 @@ def goals_achieved(temperature, conditions, wind):
     for row in response:
         target_minimum = row[0]
         target_maxvalue = row[1]
-    if target_minimum <= temperature >= target_maxvalue:
-        achieved_goals.add(3)
+    if target_minimum <= temperature <= target_maxvalue:
+        achieved_goals.append(3)
 
-    sql = "SELECT target_minimum, target_maxvalue FROM goal WHERE id = '4';"
+    sql = "SELECT target_minvalue, target_maxvalue FROM goal WHERE id = '4';"
     cursor = connection.cursor()
     cursor.execute(sql)
     response = cursor.fetchall()
@@ -100,10 +98,10 @@ def goals_achieved(temperature, conditions, wind):
     for row in response:
         target_minimum = row[0]
         target_maxvalue = row[1]
-    if target_minimum <= temperature >= target_maxvalue:
+    if target_minimum <= temperature <= target_maxvalue:
         achieved_goals.append(4)
 
-    sql = "SELECT target_minimum, target_maxvalue FROM goal WHERE id = '5';"
+    sql = "SELECT target_minvalue, target_maxvalue FROM goal WHERE id = '5';"
     cursor = connection.cursor()
     cursor.execute(sql)
     response = cursor.fetchall()
@@ -112,28 +110,28 @@ def goals_achieved(temperature, conditions, wind):
     for row in response:
         target_minimum = row[0]
         target_maxvalue = row[1]
-    if target_minimum <= temperature >= target_maxvalue:
+    if target_minimum <= temperature <= target_maxvalue:
         achieved_goals.append(5)
 
     sql = "SELECT target_text FROM goal WHERE id = '6';"
     cursor = connection.cursor()
     cursor.execute(sql)
     response = cursor.fetchall()
-    if response == conditions:
+    if response[0][0] == conditions:
         achieved_goals.append(6)
 
     sql = "SELECT target_text FROM goal WHERE id = '7';"
     cursor = connection.cursor()
     cursor.execute(sql)
     response = cursor.fetchall()
-    if response == conditions:
+    if response[0][0] == conditions:
         achieved_goals.append(7)
 
     sql = "SELECT target_minvalue FROM goal WHERE id = '8';"
     cursor = connection.cursor()
     cursor.execute(sql)
     response = cursor.fetchall()
-    if response >= wind:
+    if response[0][0] <= wind:
         achieved_goals.append(8)
 
     return achieved_goals
