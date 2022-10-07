@@ -20,11 +20,12 @@ def current_icao(screen_name):
     return response
 
 def latitude_and_longitude(icao):
-    sql = "SELECT latitude_deg, longitude_deg FROM airport WHERE ident= '" + current_icao + "';"
+    sql = "SELECT latitude_deg, longitude_deg FROM airport WHERE ident= '" + icao + "';"
     cursor = connection.cursor()
     cursor.execute(sql)
     response = cursor.fetchall()
-    return response
+    latitude, longitude = response
+    return latitude, longitude
 
 def calculate_distance_km(starting_location, final_location):
     location1 = latitude_and_longitude(starting_location)
@@ -47,8 +48,8 @@ def travel(screen_name, icao):
     return
 
 
-def update_co2_budget(co2_left, trip_distance, screen_name):
-    new_co2 = str(co2_left + trip_distance)
+def update_co2_budget(co2_avail, trip_distance, screen_name):
+    new_co2 = str(co2_avail + trip_distance)
     sql = "UPDATE game SET co2_consumed=" + new_co2 + " WHERE screen_name='" + screen_name + "';"
     cursor = connection.cursor()
     cursor.execute(sql)
@@ -56,30 +57,32 @@ def update_co2_budget(co2_left, trip_distance, screen_name):
 
 def random_weather():
     temperature = random.randint(-40, 40)
-    conditions = random.choice(['Cloudy', 'Clear'])
+    conditions = random.choice(['Clouds', 'Clear'])
     wind = random.randint(0, 15)
     weather = (temperature, conditions, wind)
-    return weather
+    temp, cond, wind = weather
+    return temp, cond, wind
 
+
+
+# if weather conditions meet any goals update goals_reached table
 def goals_achieved(temperature, conditions, wind):
-    achieved_goals = ()
-    sql_statement = ['target_minvalue', 'target_maxvalue', ('target_minimum', 'target_maxvalue'), ('target_minimum', 'target_maxvalue'), ('target_minimum', 'target_maxvalue'), 'target_text', 'target_text', 'target_minvalue']
-    for i in range(8):
-        sql = "SELECT '"+sql_statement[i]+"' FROM goal WHERE id = '1';"
+    achieved_goals = []
+    sql = "SELECT target_minvalue FROM goal WHERE id = '1';"
     cursor = connection.cursor()
     cursor.execute(sql)
     response = cursor.fetchall()
-    if temperature > response:
+    if temperature >= response[0][0]:
         achieved_goals.append(1)
 
     sql = "SELECT target_maxvalue FROM goal WHERE id = '2';"
     cursor = connection.cursor()
     cursor.execute(sql)
     response = cursor.fetchall()
-    if temperature < response:
+    if temperature <= response[0][0]:
         achieved_goals.append(2)
 
-    sql = "SELECT target_minimum, target_maxvalue FROM goal WHERE id = '3';"
+    sql = "SELECT target_minvalue, target_maxvalue FROM goal WHERE id = '3';"
     cursor = connection.cursor()
     cursor.execute(sql)
     response = cursor.fetchall()
@@ -88,10 +91,10 @@ def goals_achieved(temperature, conditions, wind):
     for row in response:
         target_minimum = row[0]
         target_maxvalue = row[1]
-    if target_minimum <= temperature >= target_maxvalue:
-        achieved_goals.add(3)
+    if target_minimum <= temperature <= target_maxvalue:
+        achieved_goals.append(3)
 
-    sql = "SELECT target_minimum, target_maxvalue FROM goal WHERE id = '4';"
+    sql = "SELECT target_minvalue, target_maxvalue FROM goal WHERE id = '4';"
     cursor = connection.cursor()
     cursor.execute(sql)
     response = cursor.fetchall()
@@ -100,10 +103,10 @@ def goals_achieved(temperature, conditions, wind):
     for row in response:
         target_minimum = row[0]
         target_maxvalue = row[1]
-    if target_minimum <= temperature >= target_maxvalue:
+    if target_minimum <= temperature <= target_maxvalue:
         achieved_goals.append(4)
 
-    sql = "SELECT target_minimum, target_maxvalue FROM goal WHERE id = '5';"
+    sql = "SELECT target_minvalue, target_maxvalue FROM goal WHERE id = '5';"
     cursor = connection.cursor()
     cursor.execute(sql)
     response = cursor.fetchall()
@@ -112,37 +115,38 @@ def goals_achieved(temperature, conditions, wind):
     for row in response:
         target_minimum = row[0]
         target_maxvalue = row[1]
-    if target_minimum <= temperature >= target_maxvalue:
+    if target_minimum <= temperature <= target_maxvalue:
         achieved_goals.append(5)
 
     sql = "SELECT target_text FROM goal WHERE id = '6';"
     cursor = connection.cursor()
     cursor.execute(sql)
     response = cursor.fetchall()
-    if response == conditions:
+    if response[0][0] == conditions:
         achieved_goals.append(6)
 
     sql = "SELECT target_text FROM goal WHERE id = '7';"
     cursor = connection.cursor()
     cursor.execute(sql)
     response = cursor.fetchall()
-    if response == conditions:
+    if response[0][0] == conditions:
         achieved_goals.append(7)
 
     sql = "SELECT target_minvalue FROM goal WHERE id = '8';"
     cursor = connection.cursor()
     cursor.execute(sql)
     response = cursor.fetchall()
-    if response >= wind:
+    if response[0][0] <= wind:
         achieved_goals.append(8)
 
     return achieved_goals
 
-# if weather conditions meet any goals update goals_reached table
-def update_goals_reached(goals_to_update, screen_name):
+def update_goals_reached(achieved_goals, screen_name):
     sql = "UPDATE goal_reached WHERE"
-
 
 # main:
 # When a player starts the game, they are greeted and asked to enter their name.
 # Their name is saved to the game table of our flight_game database and they are given a c02 budget of 10000.
+
+
+
