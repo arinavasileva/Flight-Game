@@ -11,15 +11,15 @@ connection = mariadb.connect(
 )
 
 def game_goals (id):
-    location = "SELECT name, description FROM goal"
-    location += " WHERE id='" + id + "'"
-    print(location)
+    description = "SELECT id, name, description FROM goal"
+    description += " WHERE id='" + id + "'"
+    print(description)
     cursor = connection.cursor()
-    cursor.execute(location)
+    cursor.execute(description)
     result = cursor.fetchall()
     while cursor.rowcount <= 8:
         for row in result:
-            print(f"Hello! The current goal is to fly to a country where the weather is {row[1]} and {row[2]}.")
+            print(f"The goal number {row[1]} is to fly to a country where the weather is {row[2]} and {row[3]}.")
     return
 
 
