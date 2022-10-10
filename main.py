@@ -13,16 +13,9 @@ connection = mariadb.connect(
          )
 
 def greetings(name):
-    max_id = "SELECT MAX(id) from game;"
-    cursor = connection.cursor()
-    cursor.execute(max_id)
-    # connection.commit()
-    max_num = int(cursor.fetchall()[0][0])
-    sql = "INSERT INTO game (id, screen_name, co2_consumed, co2_budget, location) VALUES(" + str(max_num + 1) +",'"+name+"', 0, 10000,'EFHK');"
+    sql = "INSERT INTO game(co2_consumed, co2_budget, screen_name, location) VALUES (0, 10000, '"+name+"', 'EFHK');"
     cursor = connection.cursor()
     cursor.execute(sql)
-    cursor.fetchall()
-    connection.commit()
     return
 
 def find_id(screen_name):
@@ -36,7 +29,16 @@ def current_icao(id):
     cursor = connection.cursor()
     cursor.execute(sql)
     response = cursor.fetchall()
-    return response
+    return response[0][0]
+
+def get_municipality(id):
+    location = "SELECT name, municipality FROM airport WHERE ident ='"+id+"'"
+    cursor = connection.cursor()
+    cursor.execute(location)
+    result = cursor.fetchall()
+    for row in result:
+        print(f"The Airport is in  {row[0]} in {row[1]}.")
+    return
 
 def latitude_and_longitude(icao):
     sql = "SELECT latitude_deg, longitude_deg FROM airport WHERE ident= '" + icao + "';"
@@ -51,12 +53,13 @@ def calculate_distance_km(starting_location, final_location):
     distance = GD(location1, location2).km
     return distance
 
-def available_co2(id):
-    sql = "select @co2_left:= co2_budget - co2_consumed as co2_left from game where screen_name= '" + id + "';"
+
+def available_co2(screen_name):
+    sql = "select @co2_left:= co2_budget - co2_consumed as co2_left from game where screen_name= '" + screen_name + "';"
     cursor = connection.cursor()
     cursor.execute(sql)
     co2_avail = cursor.fetchall()
-    return co2_avail
+    return co2_avail[0][0]
 
 
 def travel(id, icao):
@@ -155,6 +158,7 @@ def goals_achieved(temperature, conditions, wind):
 
     return achieved_goals
 
+
 # if weather conditions meet any goals update goals_reached table
 def update_goals_reached(goals_to_update, id):
     sql = "INSERT INTO goals_rached (goal_id, game_id) VALUES ('" + goals_to_update + "', '" + id + "');"
@@ -162,58 +166,17 @@ def update_goals_reached(goals_to_update, id):
     cursor.execute(sql)
     return
 
-
-
-# Amir
-
-
-import mysql.connector
-
-connection = mysql.connector.connect(
-    host='127.0.0.1',
-    port=3306,
-    database='flight_game',
-    user='root',
-    password='root123',
-    autocommit=True
-)
-def get_municipality(id):
-    location = "SELECT name, municipality FROM airport WHERE ident ='"+id+"'"
-    cursor = connection.cursor()
-    cursor.execute(location)
-    result = cursor.fetchall()
-    for row in result:
-        print(f"The Airport is in  {row[0]} in {row[1]}.")
-    return
-
-# airport_id = input("ENTER ident")
-# get_municipality(airport_id)
-
-
-
-
-
-
-def greetings(name):
-    max_id = "SELECT MAX(id) from game;"
-    cursor = connection.cursor()
-    cursor.execute(max_id)
-    # connection.commit()
-    max_num = int(cursor.fetchall()[0][0])
-    sql = "INSERT INTO game (id, screen_name, co2_consumed, co2_budget, location) VALUES(" + str(max_num + 1) +",'"+name+"', 0, 10000,'EFHK');"
+def count_goals(id):
+    sql = "SELECT COUNT (game_id) FROM goal_reached Where game_id = '" + id + "';"
     cursor = connection.cursor()
     cursor.execute(sql)
-    cursor.fetchall()
-    connection.commit()
     return
-greetings(player_name)
-
 
 
 # main:
 # When a player starts the game, they are greeted and asked to enter their name.
 print(f"Welcome to FLight game!")
-player_name = input("Enter Your Name to start a new game:")
+player_name = str(input("Enter Your Name to start a new game:"))
 
 # Their name is saved to the game table of our flight_game database and they are given a c02 budget of 10000.
 greetings(player_name)
@@ -224,20 +187,18 @@ player_id = find_id(player_name)
 
 # 'Hello [user]! Welcome to Flight Game! Please select one of the following options:'
 # Next the player is presented with a list of options:
-
-while available_co2(player_id) > 0:
-    menu_input = input("Please Enter the number of the command which you want to run: ")
+while available_co2(player_name) > 0:
+    menu_input = int(input("Please Enter the number of the command which you want to run: "))
     print("1- view current location.")
     print("2- view goals.")
     print("3- view co2 budget.")
     print("4- travel to new airport")
-
     if menu_input == 1:
-        get_municipality(current_icao(player_id))
-    elif menu_input == 2:
+        get_municipality(current_icao(player_name))
+    if menu_input == 2:
         print("Print goals achieved")
     elif menu_input == 3:
-        availableCo2 = available_co2(player_id)
+        availableCo2 = available_co2(player_name)
         print(f"Your available is {availableCo2}.")
     elif menu_input == 4:
         icao = input("Enter the ICAO code of your destination.")
