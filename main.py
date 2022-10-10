@@ -77,8 +77,8 @@ def random_weather():
     temperature = random.randint(-40, 40)
     conditions = random.choice(['Cloudy', 'Clear'])
     wind = random.randint(0, 15)
-    weather = (temperature, conditions, wind)
-    return weather
+    return temperature, conditions, wind
+
 
 def goals_achieved(temperature, conditions, wind):
     achieved_goals = []
@@ -157,10 +157,57 @@ def goals_achieved(temperature, conditions, wind):
 
 # if weather conditions meet any goals update goals_reached table
 def update_goals_reached(goals_to_update, id):
-    sql = "INSERT INTO goals_rached (goal_id, game_id) VALUES ("goals_to_update", "id");"
+    sql = "INSERT INTO goals_rached (goal_id, game_id) VALUES ('" + goals_to_update + "', '" + id + "');"
     cursor = connection.cursor()
     cursor.execute(sql)
     return
+
+
+
+# Amir
+
+
+import mysql.connector
+
+connection = mysql.connector.connect(
+    host='127.0.0.1',
+    port=3306,
+    database='flight_game',
+    user='root',
+    password='root123',
+    autocommit=True
+)
+def get_municipality(id):
+    location = "SELECT name, municipality FROM airport WHERE ident ='"+id+"'"
+    cursor = connection.cursor()
+    cursor.execute(location)
+    result = cursor.fetchall()
+    for row in result:
+        print(f"The Airport is in  {row[0]} in {row[1]}.")
+    return
+
+# airport_id = input("ENTER ident")
+# get_municipality(airport_id)
+
+
+
+
+
+
+def greetings(name):
+    max_id = "SELECT MAX(id) from game;"
+    cursor = connection.cursor()
+    cursor.execute(max_id)
+    # connection.commit()
+    max_num = int(cursor.fetchall()[0][0])
+    sql = "INSERT INTO game (id, screen_name, co2_consumed, co2_budget, location) VALUES(" + str(max_num + 1) +",'"+name+"', 0, 10000,'EFHK');"
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    cursor.fetchall()
+    connection.commit()
+    return
+greetings(player_name)
+
 
 
 # main:
@@ -171,8 +218,54 @@ player_name = input("Enter Your Name to start a new game:")
 # Their name is saved to the game table of our flight_game database and they are given a c02 budget of 10000.
 greetings(player_name)
 
+
+player_id = find_id(player_name)
+
+
 # 'Hello [user]! Welcome to Flight Game! Please select one of the following options:'
 # Next the player is presented with a list of options:
+
+while available_co2(player_id) > 0:
+    menu_input = input("Please Enter the number of the command which you want to run: ")
+    print("1- view current location.")
+    print("2- view goals.")
+    print("3- view co2 budget.")
+    print("4- travel to new airport")
+
+    if menu_input == 1:
+        get_municipality(current_icao(player_id))
+    elif menu_input == 2:
+        print("Print goals achieved")
+    elif menu_input == 3:
+        availableCo2 = available_co2(player_id)
+        print(f"Your available is {availableCo2}.")
+    elif menu_input == 4:
+        icao = input("Enter the ICAO code of your destination.")
+        lat_and_long = latitude_and_longitude(icao)
+        distance = calculate_distance_km(lat_and_long)
+        if distance < available_co2(player_id):
+            travel(player_id,icao)
+            update_co2_budget(availableCo2, distance, player_id)
+            weather = random_weather()
+            goals = goals_achieved(weather)
+            update_goals_reached(goals, player_id)
+            print(weather)
+            print(goals)
+            if count_goals(player_id) >= 5:
+                print("You win!")
+                break
+
+
+        else:
+            print("you don't have C02 budget.")
+    else:
+        print("Please enter a number between 1-4.")
+
+
+
+
+
+
 # - view current location
 # - view goals (need function)
 # - view co2 budget
@@ -199,3 +292,5 @@ greetings(player_name)
    #   - The player then goes back to the first option list
    #   - Check if the goals that are acheived are >=5 ; if so
    #   - player WINS!
+
+print("Game Over")
