@@ -1,12 +1,12 @@
-import mariadb
+import mysql.connector
 import random
 from geopy.distance import geodesic as GD
 
 
-connection = mariadb.connect(
+connection = mysql.connector.connect(
          host='127.0.0.1',
          port=3306,
-         database='flight_game2',
+         database='flight_game',
          user='root',
          password='root123',
          autocommit=True
@@ -64,8 +64,8 @@ def random_weather():
     temperature = random.randint(-40, 40)
     conditions = random.choice(['Cloudy', 'Clear'])
     wind = random.randint(0, 15)
-    weather = (temperature, conditions, wind)
-    return weather
+    return temperature, conditions, wind
+
 
 def goals_achieved(temperature, conditions, wind):
     achieved_goals = []
@@ -144,7 +144,7 @@ def goals_achieved(temperature, conditions, wind):
 
 # if weather conditions meet any goals update goals_reached table
 def update_goals_reached(goals_to_update, id):
-    sql = "INSERT INTO goals_rached (goal_id, game_id) VALUES ("goals_to_update", "id");"
+    sql = "INSERT INTO goals_rached (goal_id, game_id) VALUES ('" + goals_to_update + "', '" + id + "');"
     cursor = connection.cursor()
     cursor.execute(sql)
     return
@@ -176,7 +176,12 @@ def get_municipality(id):
 # airport_id = input("ENTER ident")
 # get_municipality(airport_id)
 
-
+def count_goals(id):
+    sql = "SELECT COUNT (game-id) From goal_reached WHERE game_id='"+id+"';"
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    response = cursor.fetchall()
+    return response
 
 
 
@@ -193,7 +198,6 @@ def greetings(name):
     cursor.fetchall()
     connection.commit()
     return
-greetings(player_name)
 
 
 
@@ -231,7 +235,14 @@ while available_co2(player_id) > 0:
         if distance < available_co2(player_id):
             travel(player_id,icao)
             update_co2_budget(availableCo2, distance, player_id)
-
+            weather = random_weather()
+            goals = goals_achieved(weather)
+            update_goals_reached(goals, player_id)
+            print(weather)
+            print(goals)
+            if count_goals(player_id) >= 5:
+                print("You win!")
+                break
 
 
         else:
