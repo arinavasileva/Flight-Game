@@ -227,6 +227,7 @@ while available_co2(player_name) > 0:
 
 
 
+
 # - view current location
 # - view goals (need function)
 # - view co2 budget
