@@ -46,4 +46,22 @@ greetings(player_name)
 
 
 
+menu_input = input("Please Enter the number of the command which you want to run: ")
+print("1- view current location.")
+print("2- view goals.")
+print("3- view co2 budget.")
+print("4- travel to new airport")
+
+if menu_input == 1:
+    get_municipality('EFHK')
+elif menu_input == 2:
+    def available_co2(screen_name)
+elif menu_input == 3:
+
+elif menu_input == 4:
+
+else:
+    print("Please enter a number between 1-4.")
+
+
 
