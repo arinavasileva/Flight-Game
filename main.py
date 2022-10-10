@@ -12,15 +12,21 @@ connection = mariadb.connect(
          autocommit=True
          )
 
-def current_icao(screen_name):
-    sql = "SELECT ident FROM airport, game WHERE game.location=airport.ident AND game.screen_name='" + screen_name + "'"
+def find_id(screen_name):
+    sql = "Select id from game where screen_name ='" + screen_name +"'"
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    response = cursor.fetchall()
+    return response
+def current_icao(id):
+    sql = "SELECT ident FROM airport, game WHERE game.location=airport.ident AND game.screen_name='" + id + "'"
     cursor = connection.cursor()
     cursor.execute(sql)
     response = cursor.fetchall()
     return response
 
 def latitude_and_longitude(icao):
-    sql = "SELECT latitude_deg, longitude_deg FROM airport WHERE ident= '" + current_icao + "';"
+    sql = "SELECT latitude_deg, longitude_deg FROM airport WHERE ident= '" + icao + "';"
     cursor = connection.cursor()
     cursor.execute(sql)
     response = cursor.fetchall()
@@ -32,24 +38,24 @@ def calculate_distance_km(starting_location, final_location):
     distance = GD(location1, location2).km
     return distance
 
-def available_co2(screen_name):
-    sql = "select @co2_left:= co2_budget - co2_consumed as co2_left from game where screen_name= '" + screen_name + "';"
+def available_co2(id):
+    sql = "select @co2_left:= co2_budget - co2_consumed as co2_left from game where screen_name= '" + id + "';"
     cursor = connection.cursor()
     cursor.execute(sql)
     co2_avail = cursor.fetchall()
     return co2_avail
 
 
-def travel(screen_name, icao):
-    sql = "UPDATE game SET location='" + icao + "' WHERE screen_name='" + screen_name + "';"
+def travel(id, icao):
+    sql = "UPDATE game SET location='" + icao + "' WHERE screen_name='" + id + "';"
     cursor = connection.cursor()
     cursor.execute(sql)
     return
 
 
-def update_co2_budget(co2_left, trip_distance, screen_name):
+def update_co2_budget(co2_left, trip_distance, id):
     new_co2 = str(co2_left + trip_distance)
-    sql = "UPDATE game SET co2_consumed=" + new_co2 + " WHERE screen_name='" + screen_name + "';"
+    sql = "UPDATE game SET co2_consumed=" + new_co2 + " WHERE screen_name='" + id + "';"
     cursor = connection.cursor()
     cursor.execute(sql)
     return
@@ -137,8 +143,11 @@ def goals_achieved(temperature, conditions, wind):
     return achieved_goals
 
 # if weather conditions meet any goals update goals_reached table
-def update_goals_reached(goals_to_update, screen_name):
-    sql = "UPDATE goal_reached WHERE"
+def update_goals_reached(goals_to_update, id):
+    sql = "INSERT INTO goals_rached (goal_id, game_id) VALUES ("goals_to_update", "id");"
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    return
 
 
 # main:
