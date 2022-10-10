@@ -173,13 +173,13 @@ def get_municipality(id):
         print(f"The Airport is in  {row[0]} in {row[1]}.")
     return
 
-airport_id = input("ENTER ident")
-get_municipality(airport_id)
+# airport_id = input("ENTER ident")
+# get_municipality(airport_id)
 
 
 
 
-player_name = input("Enter Your Name")
+
 
 def greetings(name):
     max_id = "SELECT MAX(id) from game;"
@@ -199,17 +199,43 @@ greetings(player_name)
 
 # main:
 # When a player starts the game, they are greeted and asked to enter their name.
+player_name = input("Enter Your Name")
 # Their name is saved to the game table of our flight_game database and they are given a c02 budget of 10000.
 greetings(player_name)
-# def create_player()
-# def create budget()
 
 
-
+player_id = find_id(player_name)
 
 
 # 'Hello [user]! Welcome to Flight Game! Please select one of the following options:'
 # Next the player is presented with a list of options:
+
+while available_co2(player_id) > 0:
+    menu_input = input("Please Enter the number of the command which you want to run: ")
+    print("1- view current location.")
+    print("2- view goals.")
+    print("3- view co2 budget.")
+    print("4- travel to new airport")
+
+    if menu_input == 1:
+        get_municipality(current_icao(player_id))
+    elif menu_input == 2:
+        print("Print goals achieved")
+    elif menu_input == 3:
+        available_co2(player_id)
+    elif menu_input == 4:
+        icao = input("Enter the ICAO code of your destination.")
+        lat_and_long = latitude_and_longitude(icao)
+        distance = calculate_distance_km(lat_and_long)
+        if distance < available_co2(player_id):
+            travel(player_id,icao)
+    else:
+        print("Please enter a number between 1-4.")
+
+
+
+
+
 
 # - view current location
 # - view goals (need function)
@@ -235,3 +261,5 @@ greetings(player_name)
    #   - The player then goes back to the first option list
    #   - Check if the goals that are acheived are >=5 ; if so
    #   - player WINS!
+
+print("Game Over")
