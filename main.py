@@ -193,11 +193,17 @@ greetings(player_name)
 # main:
 # When a player starts the game, they are greeted and asked to enter their name.
 # Their name is saved to the game table of our flight_game database and they are given a c02 budget of 10000.
+greetings(player_name)
 # def create_player()
 # def create budget()
 
+
+
+
+
 # 'Hello [user]! Welcome to Flight Game! Please select one of the following options:'
 # Next the player is presented with a list of options:
+
 # - view current location
 # - view goals (need function)
 # - view co2 budget
