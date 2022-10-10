@@ -222,13 +222,20 @@ while available_co2(player_id) > 0:
     elif menu_input == 2:
         print("Print goals achieved")
     elif menu_input == 3:
-        available_co2(player_id)
+        availableCo2 = available_co2(player_id)
+        print(f"Your available is {availableCo2}.")
     elif menu_input == 4:
         icao = input("Enter the ICAO code of your destination.")
         lat_and_long = latitude_and_longitude(icao)
         distance = calculate_distance_km(lat_and_long)
         if distance < available_co2(player_id):
             travel(player_id,icao)
+            update_co2_budget(availableCo2, distance, player_id)
+
+
+
+        else:
+            print("you don't have C02 budget.")
     else:
         print("Please enter a number between 1-4.")
 
