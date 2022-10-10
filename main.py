@@ -13,7 +13,7 @@ connection = mariadb.connect(
          )
 
 def greetings(name):
-    sql = "INSERT INTO game(co2_consumed, co2_budget, screen_name, location) VALUES (0, 10000, '"+name+"', 'EFHK');"
+    sql = "INSERT INTO game(co2_consumed, co2_budget, screen_name, location) VALUES (0, 100000, '"+name+"', 'EFHK');"
     cursor = connection.cursor()
     cursor.execute(sql)
     return
@@ -23,21 +23,21 @@ def find_id(screen_name):
     cursor = connection.cursor()
     cursor.execute(sql)
     response = cursor.fetchall()
-    return response
+    return str(response[0][0])
 def current_icao(id):
-    sql = "SELECT ident FROM airport, game WHERE game.location=airport.ident AND game.screen_name='" + id + "'"
+    sql = "SELECT ident FROM airport, game WHERE game.location=airport.ident AND game.id='" + id + "'"
     cursor = connection.cursor()
     cursor.execute(sql)
     response = cursor.fetchall()
     return response[0][0]
 
-def get_municipality(id):
-    location = "SELECT name, municipality FROM airport WHERE ident ='"+id+"'"
+def get_municipality(icao):
+    location = "SELECT name, municipality FROM airport WHERE ident ='"+icao+"'"
     cursor = connection.cursor()
     cursor.execute(location)
     result = cursor.fetchall()
     for row in result:
-        print(f"The Airport is in  {row[0]} in {row[1]}.")
+        print(f"You are located in {row[0]} in {row[1]}.")
     return
 
 def latitude_and_longitude(icao):
@@ -63,15 +63,15 @@ def available_co2(screen_name):
 
 
 def travel(id, icao):
-    sql = "UPDATE game SET location='" + icao + "' WHERE screen_name='" + id + "';"
+    sql = "UPDATE game SET location='" + icao + "' WHERE id='" + id + "';"
     cursor = connection.cursor()
     cursor.execute(sql)
     return
 
 
 def update_co2_budget(co2_left, trip_distance, id):
-    new_co2 = str(co2_left + trip_distance)
-    sql = "UPDATE game SET co2_consumed=" + new_co2 + " WHERE screen_name='" + id + "';"
+    new_co2 = str(co2_left - trip_distance)
+    sql = "UPDATE game SET co2_consumed=" + new_co2 + " WHERE id='" + id + "';"
     cursor = connection.cursor()
     cursor.execute(sql)
     return
@@ -161,16 +161,19 @@ def goals_achieved(temperature, conditions, wind):
 
 # if weather conditions meet any goals update goals_reached table
 def update_goals_reached(goals_to_update, id):
-    sql = "INSERT INTO goals_rached (goal_id, game_id) VALUES ('" + goals_to_update + "', '" + id + "');"
-    cursor = connection.cursor()
-    cursor.execute(sql)
+    for i in goals_to_update:
+        goal = str(i)
+        sql = "INSERT INTO goal_reached (goal_id, game_id) VALUES ('" + goal + "', '" + id + "');"
+        cursor = connection.cursor()
+        cursor.execute(sql)
     return
 
 def count_goals(id):
-    sql = "SELECT COUNT (game_id) FROM goal_reached Where game_id = '" + id + "';"
+    sql = "SELECT COUNT(game_id) FROM goal_reached Where game_id = '" + id + "';"
     cursor = connection.cursor()
     cursor.execute(sql)
-    return
+    result = cursor.fetchall()
+    return result[0][0]
 
 
 # main:
@@ -181,34 +184,34 @@ player_name = str(input("Enter Your Name to start a new game:"))
 # Their name is saved to the game table of our flight_game database and they are given a c02 budget of 10000.
 greetings(player_name)
 
-
+# store player id in a variable for function calls
 player_id = find_id(player_name)
 
-
-# 'Hello [user]! Welcome to Flight Game! Please select one of the following options:'
-# Next the player is presented with a list of options:
+# While loop to verify that the player has sufficient co2:
 while available_co2(player_name) > 0:
-    menu_input = int(input("Please Enter the number of the command which you want to run: "))
+    # Next the player is presented with a list of options
     print("1- view current location.")
     print("2- view goals.")
     print("3- view co2 budget.")
     print("4- travel to new airport")
+    menu_input = int(input("Please Enter the number of the command which you want to run: "))
     if menu_input == 1:
-        get_municipality(current_icao(player_name))
+        get_municipality(current_icao(player_id))
     if menu_input == 2:
         print("Print goals achieved")
     elif menu_input == 3:
         availableCo2 = available_co2(player_name)
-        print(f"Your available is {availableCo2}.")
+        print(f"Your available CO2 is {availableCo2}.")
     elif menu_input == 4:
         icao = input("Enter the ICAO code of your destination.")
         lat_and_long = latitude_and_longitude(icao)
-        distance = calculate_distance_km(lat_and_long)
-        if distance < available_co2(player_id):
+        distance = calculate_distance_km(icao, current_icao(player_id))
+        availableCo2 = available_co2(player_name)
+        if distance < availableCo2:
             travel(player_id,icao)
             update_co2_budget(availableCo2, distance, player_id)
             weather = random_weather()
-            goals = goals_achieved(weather)
+            goals = goals_achieved(weather[0], weather[1], weather[2])
             update_goals_reached(goals, player_id)
             print(weather)
             print(goals)
@@ -220,7 +223,7 @@ while available_co2(player_name) > 0:
         else:
             print("you don't have C02 budget.")
     else:
-        print("Please enter a number between 1-4.")
+        continue
 
 
 
