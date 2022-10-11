@@ -210,7 +210,7 @@ while available_co2(player_name) > 0:
     print("2- view goals.")
     print("3- view co2 budget.")
     print("4- travel to new airport")
-    print("5 - quit and exit game")
+    print("5- quit and exit game")
 
     menu_input = int(input("Please Enter the number of the command which you want to run: "))
 
