@@ -13,7 +13,7 @@ connection = mariadb.connect(
          )
 
 def greetings(name):
-    sql = "INSERT INTO game(co2_consumed, co2_budget, screen_name, location) VALUES (0, 100000, '"+name+"', 'EFHK');"
+    sql = "INSERT INTO game(co2_consumed, co2_budget, screen_name, location) VALUES (0, 500, '"+name+"', 'EFHK');"
     cursor = connection.cursor()
     cursor.execute(sql)
     return
@@ -210,6 +210,7 @@ while available_co2(player_name) > 0:
     print("2- view goals.")
     print("3- view co2 budget.")
     print("4- travel to new airport")
+    print("5 - quit and exit game")
 
     menu_input = int(input("Please Enter the number of the command which you want to run: "))
 
@@ -256,11 +257,14 @@ while available_co2(player_name) > 0:
             if count_goals(player_id) >= 5:
                 print("You win!")
                 break
-
         else:
             print("you don't have C02. Select a closer location")
+
+    elif menu_input == 5:
+        print("Game Over")
+        break
     else:
         print("choose only a number between 1 and 4")
 
 
-print("Game Over")
+
