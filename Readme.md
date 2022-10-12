@@ -6,7 +6,8 @@ The purpose of this game is to gain five out of eight goals from the mentioned g
 
 
 Functional requirements:
-In this game one player can play.
+
+This game only has one player..
 During the begining of the game a player will be greeted and have to enter their name.
 Next the player is presented with a list of options: 
 
@@ -19,24 +20,24 @@ If the player selects 'view current location':
 - The player's current location is displayed on the screen.
 
 If the player selects 'view goals': 
-- A list of remaining goals appear.
+- A list of all or remaining goals appear.
 
 If the player selects 'view co2 budget': 
 - The remaining co2 in the player's budget is displayed.
 
 If the player selects 'search weather conditions': 
-- The player is prompted to enter the ICAO code of the airport which they want to view the weather.
+- The player is prompted to enter the ICAO code of the airport to view the weather conditions.
 
 If the player selects 'travel to a new airport': 
-- The player is asked to enter an ICAO code for the airport the wish to travel to.
+- The player is asked to enter an ICAO code for the airport they wish to travel to.
 
-After the player enters the code, the program checks that the player has enough co2 budgeted for the trip and informs them how far away the airport is and how much co2 will be consumed. If they have enough co2, If the player selects yes: 
+After the player enters the code, the program checks that the player has enough CO2 budgeted for the trip and informs them how far away the airport is and how much CO2 will be consumed. If they have enough CO2, If the player selects yes: 
 
-     - the players location is updated
-     - the players co2 budgeted is updated
-     - goals acheived are updated if any weather conditions correnspond with unrealized goals
-     - All updated information is displayed to the player.
-     - The player then goes back to the first option.
+     - The players location is updated
+     - The players co2 budget is updated
+     - Goals acheived are updated if any weather conditions correnspond with unrealized goals
+     - All updated information is displayed to the player
+     - The player then goes back to the first option
      
      
      
