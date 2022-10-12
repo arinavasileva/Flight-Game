@@ -24,12 +24,14 @@ If the player selects 'view goals':
 If the player selects 'view co2 budget': 
 - The remaining co2 in the player's budget is displayed.
 
-
 If the player selects 'search weather conditions': 
 - The player is prompted to enter the ICAO code of the airport which they want to view the weather.
 
 If the player selects 'travel to a new airport': 
 - The player is asked to enter an ICAO code for the airport the wish to travel to.
+
+After the player enters the code, the program checks that the player has enough co2 budgeted for the trip and informs them how far away the airport is and how much co2 will be consumed. If they have enough co2, they are then asked if they want to proceed. If not, they return to the first options.
+When a player achieves five out of eight weather goals. The player wins the game.
 
 Quality requirements:
 Player will be given 
