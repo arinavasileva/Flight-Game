@@ -6,7 +6,7 @@ The purpose of this game is to gain five out of eight goals from the mentioned g
 
 
 Functional requirements:
-In this game more than one player can play.
+In this game one player can play.
 During the begining of the game a player will be greeted and have to enter their name.
 Next the player is presented with a list of options: 
 
@@ -24,8 +24,6 @@ If the player selects 'view goals':
 If the player selects 'view co2 budget': 
 - The remaining co2 in the player's budget is displayed.
 
-If the player selects 'view players': 
-- A list of all players is displayed included their goals reached, location, and co2 budget.'
 
 If the player selects 'search weather conditions': 
 - The player is prompted to enter the ICAO code of the airport which they want to view the weather.
