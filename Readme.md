@@ -30,8 +30,23 @@ If the player selects 'search weather conditions':
 If the player selects 'travel to a new airport': 
 - The player is asked to enter an ICAO code for the airport the wish to travel to.
 
-After the player enters the code, the program checks that the player has enough co2 budgeted for the trip and informs them how far away the airport is and how much co2 will be consumed. If they have enough co2, they are then asked if they want to proceed. If not, they return to the first options.
+After the player enters the code, the program checks that the player has enough co2 budgeted for the trip and informs them how far away the airport is and how much co2 will be consumed. If they have enough co2, If the player selects yes: 
+
+     - the players location is updated
+     - the players co2 budgeted is updated
+     - goals acheived are updated if any weather conditions correnspond with unrealized goals
+     - All updated information is displayed to the player.
+     - The player then goes back to the first option.
+     
+     
+     
+     
+     
+     
+     
+     
 When a player achieves five out of eight weather goals. The player wins the game.
 
 Quality requirements:
+
 Player will be given 
