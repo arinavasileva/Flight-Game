@@ -24,6 +24,7 @@ def find_id(screen_name):
     cursor.execute(sql)
     response = cursor.fetchall()
     return str(response[0][0])
+
 def current_icao(id):
     sql = "SELECT ident FROM airport, game WHERE game.location=airport.ident AND game.id='" + id + "'"
     cursor = connection.cursor()
@@ -195,8 +196,28 @@ def count_goals(id):
 # main:
 # When a player starts the game, they are greeted and asked to enter their name.
 print(f"Welcome to FLight game!")
+print("")
+print("You are an alien who has traveled to Earth to study the weather conditions on this strange planet. However,")
+print("your ship has crash landed but you still need to complete your mission. You must now travel by plane")
+print("to any airport of your choice by simply selecting the ICAO code which your alien brain has memorized. ")
+print("")
+print("Your goal is to experience five of the following eight weather conditions:")
+print("Goal 1: Hot (Over 25 degrees")
+print("Goal 2: Cold (Under -20 degrees)")
+print("Goal 3: Exactly 0 degrees")
+print("Goal 4: Exactly 10 degrees")
+print("Goal 5: Exactly 20 degrees")
+print("Goal 6: Clear conditions")
+print("Goal 7: Cloudy conditions")
+print("Goal 8: Windy (Over 10m/s")
+print("")
+print("Since you are an alien with superior intelligence and knowledge of the disastrous effects of global warming,")
+print("You have a limited co2 budget to complete your mission.")
+print("")
+print("Good luck Earth explorer!")
+print("")
 player_name = str(input("Enter Your Name to start a new game: "))
-
+print("")
 # Their name is saved to the game table of our flight_game database and they are given a c02 budget of 10000.
 greetings(player_name)
 
@@ -211,26 +232,31 @@ while available_co2(player_name) > 0:
     print("3- view co2 budget.")
     print("4- travel to new airport")
     print("5- quit and exit game")
-
+    print("")
     menu_input = int(input("Please Enter the number of the command which you want to run: "))
+    print("")
 
     # If the player selects 'view current location': - The player's current location is displayed on the screen
     if menu_input == 1:
         airport = get_municipality(current_icao(player_id))
         print(f"You are located in {airport[0][0]} in {airport[0][1]}.")
+        print("")
 
     # If the player selects 'view goals': - A list of remaining goals appear
     if menu_input == 2:
         print(f"you have achieved goals {check_goals(player_id)}")
+        print("")
 
     # If the player selects 'view co2 budget': - The remaining co2 in the player's budget is displayed
     elif menu_input == 3:
         availableCo2 = available_co2(player_name)
         print(f"Your available CO2 is {availableCo2}.")
+        print("")
 
     # If the player selects 'travel to a new airport'
     elif menu_input == 4:
         icao = input("Enter the ICAO code of your destination: ")
+        print("")
         # calculate distance to destination
         distance = calculate_distance_km(icao, current_icao(player_id))
         # calculate available co2
@@ -253,18 +279,22 @@ while available_co2(player_name) > 0:
             print(f"Conditions: {weather[1]}")
             print(f"Wind: {weather[2]}m/s")
             print(f"You have achieved goals {goals}!")
+            print("")
             # Every round, check if the player has achieved enough goals to win the game
             if count_goals(player_id) >= 5:
+                print("")
                 print("You win!")
                 break
         else:
             print("you don't have C02. Select a closer location")
+            print("")
 
     elif menu_input == 5:
         print("Game Over")
         break
-    else:
+    elif menu_input > 5:
         print("choose only a number between 1 and 4")
+        print("")
 
 
 
