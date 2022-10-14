@@ -175,7 +175,7 @@ def update_goals_reached(goals_to_update, id):
 weather = random_weather()
 goals = goals_achieved(weather[0], weather[1], weather[2])
 print(update_goals_reached(goals, 63))
-'''
+
 
 def update_co2_budget(id):
     sql = "SELECT co2_consumed FROM game WHERE id ='" + id + "';"
@@ -185,3 +185,34 @@ def update_co2_budget(id):
     return result[0][0]
 
 print(update_co2_budget('63'))
+
+
+
+
+def get_airports(country):
+    sql = "select airport.name as 'airport name', airport.ident as 'icao code' from airport, country where " \
+          "airport.iso_country=country.iso_country and country.name='" + country + "' and airport.type = " \
+                                                                                   "'large_airport'; "
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    for row in result:
+        icao = row[1]
+        airport = row[0]
+        print(f"{icao}: {airport}")
+    return
+
+
+
+'''
+search = input("Would you like to search for ICAO codes? Y/N?")
+while search != '':
+    if search == 'Y':
+        country = input("Enter the country you would like to travel to: ")
+        get_airports(country)
+        break
+    elif search == 'N':
+        break
+    else:
+        print("Please enter Y or N")
+        search = input("Would you like to search for ICAO codes? Y/N?")
