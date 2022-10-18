@@ -1,7 +1,7 @@
 import mariadb
 import random
 from geopy.distance import geodesic as GD
-
+from prettytable import PrettyTable
 
 connection = mariadb.connect(
          host='127.0.0.1',
@@ -49,10 +49,14 @@ def get_airports(country):
     cursor = connection.cursor()
     cursor.execute(sql)
     result = cursor.fetchall()
-    for row in result:
-        icao = row[1]
-        airport = row[0]
-        print(f"{icao}: {airport}")
+    table = PrettyTable(["Airport", "ICAO"])
+    table.padding_width = 2
+    table.align["Airport"] = "l"
+    for i in result:
+        icao = i[1]
+        airport = i[0]
+        table.add_row([airport, icao])
+    print(table)
     return
 
 def latitude_and_longitude(icao):
